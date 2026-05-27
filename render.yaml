@@ -1,7 +1,7 @@
 # Exported from Render on 2026-05-27T13:37:05Z
 version: "1"
 projects:
-- name: My project
+- name: BMI-Analytics-Project
   environments:
   - name: Production
     services:
