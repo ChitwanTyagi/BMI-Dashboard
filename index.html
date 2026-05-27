@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate BMI Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <style>
+        body { 
+            font-family: 'Outfit', sans-serif; 
+            /* Background Image Setup */
+            background-image: url('https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=2070&auto=format&fit=crop'); 
+            background-size: cover; 
+            background-position: center;
+            background-attachment: fixed; 
+            
+            /* 20% dark shadow, leaving the image at exactly 80% brightness */
+            background-color: rgba(0, 0, 0, 0.2); 
+            background-blend-mode: overlay; 
+        }
+        .gauge-container { position: relative; width: 200px; height: 100px; overflow: hidden; }
+        .gauge-track { width: 200px; height: 200px; border-radius: 50%; border: 20px solid #e2e8f0; box-sizing: border-box; }
+        .gauge-needle {
+            position: absolute; bottom: 0; left: 50%; width: 6px; height: 80px; 
+            background: #ef4444; border-radius: 3px; transform-origin: bottom center; 
+            transform: translateX(-50%) rotate(-90deg);
+            transition: transform 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 10; box-shadow: 0 0 10px #ef4444, 0 0 20px #ef4444;
+        }
+    </style>
+</head>
+<body class="text-slate-100 min-h-screen flex items-center justify-center p-4">
+
+    <div class="bg-slate-800 p-8 rounded-2xl shadow-2xl w-full max-w-lg border border-slate-700">
+        <h1 class="text-3xl font-extrabold text-center mb-6 text-emerald-400">📊 BMI Fitness Dashboard</h1>
+
+        <form id="bmiForm" class="space-y-4">
+            <div>
+                <label class="block text-sm font-semibold mb-1">Full Name</label>
+                <input type="text" id="name" required class="w-full bg-slate-700 rounded-lg px-4 py-2 text-white outline-none focus:ring-2 focus:ring-emerald-500">
+            </div>
+            
+            <div class="grid grid-cols-3 gap-3">
+                <div>
+                    <label class="block text-sm font-semibold mb-1">Age</label>
+                    <input type="number" id="age" required class="w-full bg-slate-700 rounded-lg px-4 py-2 text-white outline-none focus:ring-2 focus:ring-emerald-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1">Weight (kg)</label>
+                    <input type="number" step="0.1" id="weight" required class="w-full bg-slate-700 rounded-lg px-4 py-2 text-white outline-none focus:ring-2 focus:ring-emerald-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1">Height (m)</label>
+                    <input type="number" step="0.01" id="height" required class="w-full bg-slate-700 rounded-lg px-4 py-2 text-white outline-none focus:ring-2 focus:ring-emerald-500">
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-2 pt-2">
+                <input type="checkbox" id="saveData" checked class="w-4 h-4 text-emerald-500 bg-slate-700 border-slate-600 rounded focus:ring-emerald-500 focus:ring-2 cursor-pointer">
+                <label for="saveData" class="text-sm font-semibold text-slate-300 cursor-pointer">Save my data to history log</label>
+            </div>
+            
+            <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3 rounded-lg mt-2 cursor-pointer transition duration-200 shadow-lg">
+                Calculate Score
+            </button>
+
+            <div class="mt-6 bg-slate-900/60 border border-slate-700 rounded-xl p-5 text-center shadow-inner">
+                <p class="text-emerald-400 font-bold text-sm mb-1 uppercase tracking-wider">💡 Clinical Formula</p>
+                <p class="text-slate-300 font-mono text-base bg-slate-800 inline-block px-4 py-1 rounded-md mt-2 border border-slate-600">
+                    BMI = Weight (kg) / Height (m)<sup>2</sup>
+                </p>
+            </div>
+        </form>
+
+        <div id="results" class="hidden border-t border-slate-700 pt-6">
+            <h2 id="greeting" class="text-xl font-bold text-center"></h2>
+            
+            <div class="flex flex-col items-center justify-center mt-4">
+                <div class="gauge-container">
+                    <div class="gauge-track"></div>
+                    <div id="needle" class="gauge-needle"></div>
+                </div>
+                <div id="bmiDisplay" class="text-5xl font-black mt-4 text-emerald-400">0.0</div>
+                <div id="categoryDisplay" class="text-lg font-bold px-4 py-1 rounded-full mt-2">Normal</div>
+            </div>
+
+            <div class="bg-slate-700/50 p-5 rounded-xl mt-6 border border-slate-600">
+                <h3 class="text-md font-bold text-emerald-400 mb-2">🍎 Recommended Diet Strategy:</h3>
+                <p id="dietPlan" class="text-sm text-slate-300 leading-relaxed"></p>
+            </div>
+        </div>
+
+        <button id="resetBtn" class="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 rounded-lg mt-6 hidden transition duration-200 cursor-pointer border border-slate-600">
+            Calculate Another BMI
+        </button>
+
+    </div>
+
+    <script>
+        function showDashboard(data) {
+            document.getElementById('greeting').innerText = `Hello ${data.name}! Here is your analysis:`;
+            document.getElementById('bmiDisplay').innerText = data.calculated_bmi;
+            document.getElementById('categoryDisplay').innerText = data.category;
+            document.getElementById('dietPlan').innerText = data.diet_plan;
+
+            const catDiv = document.getElementById('categoryDisplay');
+            catDiv.className = "text-sm font-bold px-4 py-1 rounded-full mt-2 ";
+            if(data.category === "Underweight") catDiv.classList.add('bg-blue-500/20', 'text-blue-400');
+            else if(data.category === "Normal Weight") catDiv.classList.add('bg-emerald-500/20', 'text-emerald-400');
+            else if(data.category === "Overweight") catDiv.classList.add('bg-amber-500/20', 'text-amber-400');
+            else catDiv.classList.add('bg-red-500/20', 'text-red-400');
+
+            let bmi = data.calculated_bmi;
+            if (bmi < 15) bmi = 15;
+            if (bmi > 40) bmi = 40;
+            const percentage = (bmi - 15) / (40 - 15);
+            const degrees = -90 + (percentage * 180);
+            
+            setTimeout(() => {
+                document.getElementById('needle').style.transform = `translateX(-50%) rotate(${degrees}deg)`;
+            }, 100);
+
+            document.getElementById('bmiForm').classList.add('hidden');
+            document.getElementById('results').classList.remove('hidden');
+            document.getElementById('resetBtn').classList.remove('hidden');
+        }
+
+        // Checks for saved data when the page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedData = localStorage.getItem('userBMI');
+            if (savedData) {
+                showDashboard(JSON.parse(savedData));
+            }
+        });
+
+        // Gathers the data and checks the privacy box when submit is clicked
+        document.getElementById('bmiForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const payload = {
+                name: document.getElementById('name').value,
+                age: parseInt(document.getElementById('age').value),
+                weight_kg: parseFloat(document.getElementById('weight').value),
+                height_meters: parseFloat(document.getElementById('height').value),
+                save_data: document.getElementById('saveData').checked
+            };
+
+            const response = await fetch('/calculate_bmi', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+            localStorage.setItem('userBMI', JSON.stringify(data));
+            showDashboard(data);
+        });
+
+        // Wipes the data and resets the layout
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            localStorage.removeItem('userBMI');
+            document.getElementById('bmiForm').reset();
+            document.getElementById('needle').style.transform = `translateX(-50%) rotate(-90deg)`;
+            
+            document.getElementById('results').classList.add('hidden');
+            document.getElementById('resetBtn').classList.add('hidden');
+            document.getElementById('bmiForm').classList.remove('hidden');
+        });
+    </script>
+</body>
+</html>
