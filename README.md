@@ -1,3 +1,4 @@
+[Click Here To View Dashboard](https://bmi-dashboard.onrender.com) --> LIVE DEMO
 BMI DASHBOARD & dATA PIPELINE
 A Full-stack web application designed to calculate Body Mass Index(BMI) and provide health-conscious feedback, featuring a custom Python/FastApi backend and an SQLite database for persistent, privacy-focused data storage.
 
