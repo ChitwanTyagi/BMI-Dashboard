@@ -37,42 +37,97 @@
         <h1 class="text-3xl font-extrabold text-center mb-6 text-emerald-400">📊 BMI Fitness Dashboard</h1>
 
         <form id="bmiForm" class="space-y-4">
-            <div>
-                <label class="block text-sm font-semibold mb-1">Full Name</label>
-                <input type="text" id="name" required class="w-full bg-slate-700 rounded-lg px-4 py-2 text-white outline-none focus:ring-2 focus:ring-emerald-500">
-            </div>
-            
-            <div class="flex flex-col space-y-4">
+            <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-semibold mb-1">Age</label>
-                    <input type="number" id="age" required class="w-full bg-slate-700 rounded-lg px-4 py-2 text-white outline-none focus:ring-2 focus:ring-emerald-500">
+                    <label class="block text-sm font-semibold mb-1">Full Name</label>
+                    <input type="text" id="name" placeholder="e.g. Chitwan" required class="w-full bg-slate-700 rounded-lg px-4 py-2 text-white outline-none focus:ring-2 focus:ring-emerald-500">
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold mb-1">Weight</label>
-                    <div class="flex space-x-2">
-                    <input type="number" step="0.1" id="weight" required class="w-full bg-slate-700 rounded-lg px-4 py-2 text-white outline-none focus:ring-2 focus:ring-emerald-500">
+                    <label class="block text-sm font-semibold mb-1">Age</label>
+                    <input type="number" id="age" placeholder="e.g. 21" required class="w-full bg-slate-700 rounded-lg px-4 py-2 text-white outline-none focus:ring-2 focus:ring-emerald-500">
+                </div>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-semibold mb-1">Weight</label>
+                <div class="flex space-x-2">
+                    <input type="number" step="0.1" id="weight" placeholder="e.g. 65" required class="w-full bg-slate-700 rounded-lg px-4 py-2 text-white outline-none focus:ring-2 focus:ring-emerald-500">
                     <select id="weightUnit" class="bg-slate-700 rounded-lg px-2 py-2 text-white cursor-pointer outline-none focus:ring-2 focus:ring-emerald-500">
                         <option value="kg">kg</option>
                         <option value="lbs">lbs</option>
                     </select>
                 </div>
             </div>
-                <div>
-                    <label class="block text-sm font-semibold mb-1">Height</label>
-                    <div class="flex space-x-2">
-                    <input type="number" step="0.01" id="height" required class="w-full bg-slate-700 rounded-lg px-4 py-2 text-white outline-none focus:ring-2 focus:ring-emerald-500">
-                    <select id="heightUnit" class="bg-slate-700 rounded-lg px-2 py-2 text-white cursor-pointer outline-none focus:ring-2 focus:ring-emerald-500">
-                        <option value="m">m</option>
+        
+            <div>
+                <label class="block text-sm font-semibold mb-1">Height</label>
+                <div class="flex space-x-2">
+                    <input type="number" step="0.01" id="height_standard" placeholder="e.g. 175" class="w-full bg-slate-700 rounded-lg px-4 py-2 text-white outline-none focus:ring-2 focus:ring-emerald-500 block">
+                    <input type="number" id="height_ft" placeholder="e.g. 5 (ft)" class="w-full bg-slate-700 rounded-lg px-4 py-2 text-white outline-none focus:ring-2 focus:ring-emerald-500 hidden">
+                    <input type="number" id="height_in" placeholder="e.g. 8 (in)" class="w-full bg-slate-700 rounded-lg px-4 py-2 text-white outline-none focus:ring-2 focus:ring-emerald-500 hidden">
+                    
+                    <select id="heightUnit" onchange="toggleHeightUI()" class="bg-slate-700 rounded-lg px-2 py-2 text-white cursor-pointer outline-none focus:ring-2 focus:ring-emerald-500">
                         <option value="cm">cm</option>
-                        <option value="in">in</option>
-                        <option value="ft">ft</option>
+                        <option value="m">m</option>
+                        <option value="inch">in</option>
+                        <option value="ft">ft / in</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold mb-1">Region</label>
+                <select id="location" class="w-full bg-slate-700 rounded-lg px-4 py-2 text-white cursor-pointer outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
+                    <optgroup label="Asia">
+                        <option value="South Asia">South Asia (India, Pakistan, etc.)</option>
+                        <option value="East Asia">East Asia (China, Japan, Korea)</option>
+                        <option value="Southeast Asia">Southeast Asia</option>
+                        <option value="Middle East">Middle East</option>
+                    </optgroup>
+                    <optgroup label="Americas">
+                        <option value="North America">North America</option>
+                        <option value="Central America">Central America</option>
+                        <option value="South America">South America</option>
+                    </optgroup>
+                    <optgroup label="Europe">
+                        <option value="Western Europe">Western Europe</option>
+                        <option value="Eastern Europe">Eastern Europe</option>
+                        <option value="Northern Europe">Northern Europe</option>
+                        <option value="Southern Europe">Southern Europe</option>
+                    </optgroup>
+                    <optgroup label="Africa & Oceania">
+                        <option value="North Africa">North Africa</option>
+                        <option value="Sub-Saharan Africa">Sub-Saharan Africa</option>
+                        <option value="Oceania">Oceania</option>
+                    </optgroup>
+                </select>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-2">
+                <div>
+                    <label class="block text-sm font-semibold mb-1">Activity Level</label>
+                    <select id="activity_level" class="w-full bg-slate-700 rounded-lg px-2 py-2 text-white cursor-pointer outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
+                        <option value="Sedentary">Sedentary (Sitting work)</option>
+                        <option value="Lightly Active">Lightly Active (1-3 days)</option>
+                        <option value="Moderately Active">Moderately Active (3-5 days)</option>
+                        <option value="Very Active">Very Active (Heavy exercise)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1">Dietary Preference</label>
+                    <select id="dietary_preference" class="w-full bg-slate-700 rounded-lg px-2 py-2 text-white cursor-pointer outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
+                        <option value="Omnivore">Omnivore (Meat & Plants)</option>
+                        <option value="Vegetarian">Vegetarian</option>
+                        <option value="Vegan">Vegan</option>
+                        <option value="Pescatarian">Pescatarian (Fish & Veggies)</option>
+                        <option value="Keto">Keto (Low-Carb)</option>
                     </select>
                 </div>
             </div>
 
             <div class="flex items-center space-x-2 pt-2">
                 <input type="checkbox" id="consent" checked class="w-4 h-4 text-emerald-500 bg-slate-700 border-slate-600 rounded focus:ring-emerald-500 focus:ring-2 cursor-pointer">
-                <label for="consent" class="text-sm font-semibold text-slate-300 cursor-pointer">I consent to save my data to the history log</label>
+                <label for="consent" class="text-sm font-semibold text-slate-300 cursor-pointer">I consent to save my real name (Uncheck to stay anonymous)</label>
             </div>
             
             <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3 rounded-lg mt-2 cursor-pointer transition duration-200 shadow-lg">
@@ -112,16 +167,40 @@
     </div>
 
     <script>
+        function toggleHeightUI() {
+            const unit = document.getElementById('heightUnit').value;
+            const singleDiv = document.getElementById('height_standard');
+            const ftDiv = document.getElementById('height_ft');
+            const inDiv = document.getElementById('height_in');
+
+            if (unit === 'ft') {
+                singleDiv.classList.remove('block');
+                singleDiv.classList.add('hidden');
+                ftDiv.classList.remove('hidden');
+                ftDiv.classList.add('block');
+                inDiv.classList.remove('hidden');
+                inDiv.classList.add('block');
+            } else {
+                ftDiv.classList.remove('block');
+                ftDiv.classList.add('hidden');
+                inDiv.classList.remove('block');
+                inDiv.classList.add('hidden');
+                singleDiv.classList.remove('hidden');
+                singleDiv.classList.add('block');
+            }
+        }
+
         function showDashboard(data) {
             document.getElementById('greeting').innerText = `Hello ${data.name}! Here is your analysis:`;
             document.getElementById('bmiDisplay').innerText = data.calculated_bmi;
             document.getElementById('categoryDisplay').innerText = data.category;
-            document.getElementById('dietPlan').innerText = data.diet_plan;
+            
+            document.getElementById('dietPlan').innerText = data.diet_plan || "Check back soon for diet tips!";
 
             const catDiv = document.getElementById('categoryDisplay');
             catDiv.className = "text-sm font-bold px-4 py-1 rounded-full mt-2 ";
             if(data.category === "Underweight") catDiv.classList.add('bg-blue-500/20', 'text-blue-400');
-            else if(data.category === "Normal Weight") catDiv.classList.add('bg-emerald-500/20', 'text-emerald-400');
+            else if(data.category === "Normal Weight" || data.category === "Normal") catDiv.classList.add('bg-emerald-500/20', 'text-emerald-400');
             else if(data.category === "Overweight") catDiv.classList.add('bg-amber-500/20', 'text-amber-400');
             else catDiv.classList.add('bg-red-500/20', 'text-red-400');
 
@@ -140,25 +219,47 @@
             document.getElementById('resetBtn').classList.remove('hidden');
         }
 
-        // Checks for saved data when the page loads
         window.addEventListener('DOMContentLoaded', () => {
             const savedData = localStorage.getItem('userBMI');
             if (savedData) {
-                showDashboard(JSON.parse(savedData));
+                try {
+                    const parsedData = JSON.parse(savedData);
+                    if (!parsedData.diet_plan) throw new Error("Old data version detected.");
+                    showDashboard(parsedData);
+                } catch (error) {
+                    console.log("Cleared old cache memory to prevent a crash.");
+                    localStorage.removeItem('userBMI');
+                }
             }
         });
 
-        // Gathers the data and checks the privacy box when submit is clicked
         document.getElementById('bmiForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+
+            let finalHeight = 0;
+            let finalUnit = document.getElementById('heightUnit').value;
+            
+            if (finalUnit === 'ft') {
+                const ftVal = parseFloat(document.getElementById('height_ft').value) || 0;
+                const inVal = parseFloat(document.getElementById('height_in').value) || 0;
+                finalHeight = ftVal + (inVal / 12);
+            } else if (finalUnit === 'inch') {
+                finalHeight = (parseFloat(document.getElementById('height_standard').value) || 0) / 12;
+                finalUnit = 'ft';
+            } else {
+                finalHeight = parseFloat(document.getElementById('height_standard').value) || 0;
+            }
             
             const payload = {
                 name: document.getElementById('name').value,
                 age: parseInt(document.getElementById('age').value),
                 weight_kg: parseFloat(document.getElementById('weight').value),
                 weight_unit: document.getElementById('weightUnit').value,
-                height_meters: parseFloat(document.getElementById('height').value),
-                height_unit: document.getElementById('heightUnit').value,
+                height_meters: finalHeight,
+                height_unit: finalUnit,
+                location: document.getElementById('location').value,
+                activity_level: document.getElementById('activity_level').value,
+                dietary_preference: document.getElementById('dietary_preference').value,
                 consent: document.getElementById('consent').checked
             };
 
@@ -168,15 +269,19 @@
                 body: JSON.stringify(payload)
             });
 
-            const data = await response.json();
-            localStorage.setItem('userBMI', JSON.stringify(data));
-            showDashboard(data);
+            if(response.ok){
+                const data = await response.json();
+                localStorage.setItem('userBMI', JSON.stringify(data));
+                showDashboard(data);
+            } else {
+                alert('Oops! Check your numbers and make sure everything is filled out.');
+            }
         });
 
-        // Wipes the data and resets the layout
         document.getElementById('resetBtn').addEventListener('click', () => {
             localStorage.removeItem('userBMI');
             document.getElementById('bmiForm').reset();
+            toggleHeightUI(); 
             document.getElementById('needle').style.transform = `translateX(-50%) rotate(-90deg)`;
             
             document.getElementById('results').classList.add('hidden');

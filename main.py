@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends
 from fastapi.responses import FileResponse, HTMLResponse
 from pydantic import BaseModel
-from sqlalchemy import create_engine, Column, Integer, String, Float
+from sqlalchemy import Boolean, create_engine, Column, Integer, String, Float
 from sqlalchemy.orm import sessionmaker, declarative_base, Session
 DATABASE_URL = "sqlite:///./bmi_calculator.db"
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
@@ -17,6 +17,10 @@ class BMIRecord(Base):
     height_meters = Column(Float)
     bmi_value = Column(Float)
     category = Column(String)
+    location = Column(String)
+    activity_level = Column(String)
+    dietary_preference = Column(String)
+    consent = Column(Boolean, default=True)
 
 Base.metadata.create_all(bind=engine)
 def get_db():
@@ -35,6 +39,9 @@ class UserInfo(BaseModel):
     weight_unit: str
     height_meters: float
     height_unit: str
+    location: str
+    activity_level: str
+    dietary_preference: str
     consent: bool = True
 
 @app.get("/", response_class=HTMLResponse)
@@ -76,23 +83,27 @@ def calculate_bmi(user_info: UserInfo, db: Session = Depends(get_db)):
         category = "Obese"
         diet_plan = "Structured caloric management. Focus heavy on lean proteins, high -volume foods like veggies, and whole grains. AND hit the gym BRavvv!!!!"
 
-    # Create and save the BMI record
-    if user_info.consent:
-        new_db_record = BMIRecord(
-            name=user_info.name,
-            age=user_info.age,
-            weight_kg=actual_kg,
-            height_meters=actual_m,
-            bmi_value=rounded_bmi,
-            category=category,
-        )
-        db.add(new_db_record)
+    # Create and save the BMI record(Always save, just hide the name if consent is not given)
+    saved_name = user_info.name if user_info.consent else "Anonymous"
+    new_db_record = BMIRecord(
+        name=saved_name,
+        age=user_info.age,
+        weight_kg=actual_kg,
+        height_meters=actual_m,
+        bmi_value=rounded_bmi,
+        category=category,
+        location=user_info.location,
+        activity_level=user_info.activity_level,
+        dietary_preference=user_info.dietary_preference,
+        consent=user_info.consent
+    )
+    db.add(new_db_record)
         #print("Incoming data:", user_info)
-        db.commit()
-        db.refresh(new_db_record)
+    db.commit()
+    db.refresh(new_db_record)
 
     return {
-        "name": user_info.name,
+        "name": user_info.name,  #Keeps it personalized for the user
         "calculated_bmi": rounded_bmi,
         "category": category,
         "diet_plan": diet_plan,
