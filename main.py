@@ -32,8 +32,10 @@ class UserInfo(BaseModel):
     name: str
     age: int
     weight_kg: float
+    weight_unit: str
     height_meters: float
-    save_data: bool = True
+    height_unit: str
+    consent: bool = True
 
 @app.get("/", response_class=HTMLResponse)
 def read_root():
@@ -45,7 +47,20 @@ def get_favicon():
 
 @app.post("/calculate_bmi")
 def calculate_bmi(user_info: UserInfo, db: Session = Depends(get_db)):
-    bmi_value = user_info.weight_kg / (user_info.height_meters ** 2)
+    #1. Normalize Weight to true kg
+    actual_kg = user_info.weight_kg
+    if user_info.weight_unit == "lbs":
+        actual_kg = user_info.weight_kg * 0.453592
+    #2. Normalize Height to true meters
+    actual_m = user_info.height_meters   
+    if user_info.height_unit == "cm":
+        actual_m = user_info.height_meters * 0.01
+    elif user_info.height_unit == "in":
+        actual_m = user_info.height_meters * 0.0254
+    elif user_info.height_unit == "ft":
+        actual_m = user_info.height_meters * 0.3048
+    #3. Calculate BMI
+    bmi_value = actual_kg / (actual_m ** 2)
     rounded_bmi = round(bmi_value, 2)
     # Determine BMI category
     if rounded_bmi < 18.5:
@@ -62,12 +77,12 @@ def calculate_bmi(user_info: UserInfo, db: Session = Depends(get_db)):
         diet_plan = "Structured caloric management. Focus heavy on lean proteins, high -volume foods like veggies, and whole grains. AND hit the gym BRavvv!!!!"
 
     # Create and save the BMI record
-    if user_info.save_data:
+    if user_info.consent:
         new_db_record = BMIRecord(
             name=user_info.name,
             age=user_info.age,
-            weight_kg=user_info.weight_kg,
-            height_meters=user_info.height_meters,
+            weight_kg=actual_kg,
+            height_meters=actual_m,
             bmi_value=rounded_bmi,
             category=category,
         )

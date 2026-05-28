@@ -42,24 +42,37 @@
                 <input type="text" id="name" required class="w-full bg-slate-700 rounded-lg px-4 py-2 text-white outline-none focus:ring-2 focus:ring-emerald-500">
             </div>
             
-            <div class="grid grid-cols-3 gap-3">
+            <div class="flex flex-col space-y-4">
                 <div>
                     <label class="block text-sm font-semibold mb-1">Age</label>
                     <input type="number" id="age" required class="w-full bg-slate-700 rounded-lg px-4 py-2 text-white outline-none focus:ring-2 focus:ring-emerald-500">
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold mb-1">Weight (kg)</label>
+                    <label class="block text-sm font-semibold mb-1">Weight</label>
+                    <div class="flex space-x-2">
                     <input type="number" step="0.1" id="weight" required class="w-full bg-slate-700 rounded-lg px-4 py-2 text-white outline-none focus:ring-2 focus:ring-emerald-500">
+                    <select id="weightUnit" class="bg-slate-700 rounded-lg px-2 py-2 text-white cursor-pointer outline-none focus:ring-2 focus:ring-emerald-500">
+                        <option value="kg">kg</option>
+                        <option value="lbs">lbs</option>
+                    </select>
                 </div>
+            </div>
                 <div>
-                    <label class="block text-sm font-semibold mb-1">Height (m)</label>
+                    <label class="block text-sm font-semibold mb-1">Height</label>
+                    <div class="flex space-x-2">
                     <input type="number" step="0.01" id="height" required class="w-full bg-slate-700 rounded-lg px-4 py-2 text-white outline-none focus:ring-2 focus:ring-emerald-500">
+                    <select id="heightUnit" class="bg-slate-700 rounded-lg px-2 py-2 text-white cursor-pointer outline-none focus:ring-2 focus:ring-emerald-500">
+                        <option value="m">m</option>
+                        <option value="cm">cm</option>
+                        <option value="in">in</option>
+                        <option value="ft">ft</option>
+                    </select>
                 </div>
             </div>
 
             <div class="flex items-center space-x-2 pt-2">
-                <input type="checkbox" id="saveData" checked class="w-4 h-4 text-emerald-500 bg-slate-700 border-slate-600 rounded focus:ring-emerald-500 focus:ring-2 cursor-pointer">
-                <label for="saveData" class="text-sm font-semibold text-slate-300 cursor-pointer">Save my data to history log</label>
+                <input type="checkbox" id="consent" checked class="w-4 h-4 text-emerald-500 bg-slate-700 border-slate-600 rounded focus:ring-emerald-500 focus:ring-2 cursor-pointer">
+                <label for="consent" class="text-sm font-semibold text-slate-300 cursor-pointer">I consent to save my data to the history log</label>
             </div>
             
             <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3 rounded-lg mt-2 cursor-pointer transition duration-200 shadow-lg">
@@ -143,8 +156,10 @@
                 name: document.getElementById('name').value,
                 age: parseInt(document.getElementById('age').value),
                 weight_kg: parseFloat(document.getElementById('weight').value),
+                weight_unit: document.getElementById('weightUnit').value,
                 height_meters: parseFloat(document.getElementById('height').value),
-                save_data: document.getElementById('saveData').checked
+                height_unit: document.getElementById('heightUnit').value,
+                consent: document.getElementById('consent').checked
             };
 
             const response = await fetch('/calculate_bmi', {
