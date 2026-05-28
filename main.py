@@ -1,4 +1,5 @@
-from fastapi import FastAPI, Depends
+import os
+from fastapi import FastAPI, Depends, HTTPException
 from fastapi.responses import FileResponse, HTMLResponse
 from pydantic import BaseModel
 from sqlalchemy import Boolean, create_engine, Column, Integer, String, Float
@@ -108,3 +109,13 @@ def calculate_bmi(user_info: UserInfo, db: Session = Depends(get_db)):
         "category": category,
         "diet_plan": diet_plan,
     }
+
+
+@app.get("/view-data")
+def view_data(key: str, db: Session = Depends(get_db)):
+    # Simple security check: Only allow access if the key is correct
+    secret_key = os.getenv("ADMIN_PASSWORD")
+    if not secret_key or key != secret_key:
+        raise HTTPException(status_code=403, detail="Unauthorized access")
+    records = db.query(BMIRecord).all()
+    return records
