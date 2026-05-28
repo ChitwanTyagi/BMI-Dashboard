@@ -72,6 +72,7 @@ def calculate_bmi(user_info: UserInfo, db: Session = Depends(get_db)):
             category=category,
         )
         db.add(new_db_record)
+        print("Incoming data:", user_info)
         db.commit()
         db.refresh(new_db_record)
 
